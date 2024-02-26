@@ -9,7 +9,7 @@ import com.onetouch.screens.ChatScreen
 import com.onetouch.screens.ExoPlayerView
 import com.onetouch.screens.HomeScreen
 import com.onetouch.screens.StartScreen
-import com.onetouch.screens.StoryScreen
+//import com.onetouch.screens.StoryScreen
 
 @Preview
 @Composable
@@ -31,7 +31,7 @@ fun MainNavigation() {
             ExoPlayerView( "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",fullScreen = true)
         }
         composable(STORY_SCREEN){
-            StoryScreen( navHostController)
+//            StoryScreen( navHostController)
         }
     }
 
