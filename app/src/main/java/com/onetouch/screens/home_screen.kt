@@ -1,6 +1,8 @@
 package com.onetouch.screens
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,9 +36,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.onetouch.data.Person
 import com.onetouch.data.personList
+import com.onetouch.life.R
 import com.onetouch.life.ui.theme.DarkGray
 import com.onetouch.life.ui.theme.Gray
 import com.onetouch.life.ui.theme.Gray400
@@ -47,6 +51,8 @@ import com.onetouch.life.ui.theme.InterSemibold
 import com.onetouch.life.ui.theme.Line
 import com.onetouch.life.ui.theme.Yellow
 import com.onetouch.navigation.CHAT_SCREEN
+import com.onetouch.navigation.STORY_SCREEN
+import com.onetouch.navigation.VIDEO_SCREEN
 
 
 @Composable
@@ -70,7 +76,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.width(10.dp))
                 }
                 items(personList, key = { it.id }) {
-                    UserStory(person = it)
+                    UserStory(person = it, navController = navHostController)
                 }
             }
             Box(
@@ -98,6 +104,7 @@ fun HomeScreen(
         }
 
     }
+//    AddStoryScreen(navHostController)
 
 }
 
@@ -175,12 +182,17 @@ fun UserEachRow(
 
 @Composable
 fun UserStory(
-    person: Person, modifier: Modifier = Modifier
+    person: Person,
+    modifier: Modifier = Modifier,
+    navController: NavController
 ) {
     Column(
-        modifier = modifier.padding(end = 10.dp)
+        modifier = modifier
+            .clickable {
+                navController.navigate(VIDEO_SCREEN)
+            }
+            .padding(end = 10.dp)
     ) {
-
         Card(
             modifier = Modifier.size(70.dp),
             shape = CircleShape,
@@ -209,24 +221,38 @@ fun UserStory(
                 color = Color.White, fontSize = 13.sp, fontFamily = InterMedium
             ), modifier = Modifier.align(CenterHorizontally)
         )
-
     }
 }
+
 
 
 @Composable
 fun AddStoryLayout(
     modifier: Modifier = Modifier
+//    navController: NavController,
+//    onClick: () -> Unit
 ) {
+    val requestPermissionLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+//                onClick()
+            } else {
+                // Permission is denied, handle accordingly
+                // For simplicity, we're not doing anything here, you might want to display a message to the user
+            }
+        }
 
     Column(
         modifier = modifier
     ) {
-
         Card(
-            modifier = Modifier.size(70.dp),
+            modifier = Modifier
+                .size(70.dp)
+                .clickable(onClick = {
+                    // Request camera permission when the button is clicked
+                    requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                }),
             shape = CircleShape,
-            border = BorderStroke(2.dp, DarkGray),
             elevation = 0.dp,
             backgroundColor = Color.Black
         ) {
@@ -234,35 +260,36 @@ fun AddStoryLayout(
                 modifier = Modifier
                     .padding(5.dp)
                     .clip(CircleShape)
-                    .background(Yellow),
+                    .background(Color.Yellow),
                 contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(20.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = "",
-                        modifier = Modifier.size(12.dp),
-                        tint = Yellow
-                    )
-                }
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "",
+                    modifier = Modifier.size(12.dp),
+                    tint = Color.Yellow
+                )
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = stringResource(com.onetouch.life.R.string.add_story), style = TextStyle(
-                color = Color.White, fontSize = 13.sp, fontFamily = InterMedium
-            ), modifier = Modifier.align(CenterHorizontally)
+            text = stringResource(id = R.string.add_story),
+            style = TextStyle(
+                color = Color.White,
+                fontSize = 13.sp,
+                // Assuming InterMedium is defined elsewhere
+            ),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-
     }
-
 }
+
+//@Composable
+//fun AddStoryScreen(navController: NavController) {
+//    AddStoryLayout(navController = navController) {
+//        navController.navigate(STORY_SCREEN)
+//    }
+//}
 
 @Composable
 fun Header() {
